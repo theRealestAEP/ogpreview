@@ -1,32 +1,22 @@
-# React + TypeScript + Vite
+# OG/Viewer
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A minimal Open Graph previewer. Paste a URL and see how its link unfurls across the places OG tags actually get rendered — Slack, Discord, X/Twitter, iMessage, LinkedIn, and Facebook — side by side. Edit any tag value (title, description, image, etc.) and every preview updates live, so you can tune your copy before shipping the tags.
 
-Currently, two official plugins are available:
+**Export PNG** downloads all six previews as a single high-res (2×) sheet — handy for sharing in a PR or design review.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+![All six platform previews rendered for stripe.com](docs/og-sheet-stripe.png)
 
-## React Compiler
+## Run it
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```sh
+npm install
+npm run dev
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+Fetching works through a small proxy built into the Vite dev server (`/api/og-proxy`, see `vite.config.ts`), so it needs `npm run dev` or `vite preview`. If deployed statically it falls back to public CORS proxies, which are less reliable.
+
+## Structure
+
+- `src/lib/og.ts` — fetches a page, parses `og:*` / `twitter:*` / fallback meta tags
+- `src/components/previews/` — one component per platform, all taking the same `OGData` prop; add a new surface by dropping in another component
+- `src/components/ExportSheet.tsx` — fixed-width layout captured by the PNG export

@@ -8,10 +8,15 @@ import { IMessagePreview } from './previews/IMessagePreview'
 import { LinkedInPreview } from './previews/LinkedInPreview'
 import { FacebookPreview } from './previews/FacebookPreview'
 
-// External images must be same-origin for html-to-image to embed them,
-// so the sheet loads them through the dev server's og-proxy.
-const proxied = (u: string) =>
-  /^https?:\/\//i.test(u) ? `/api/og-proxy?url=${encodeURIComponent(u)}` : u
+// html-to-image can only embed images it can fetch, so the sheet loads
+// them through the dev server's og-proxy — or, on a static deploy where
+// that endpoint doesn't exist, through a public CORS proxy.
+const proxied = (u: string) => {
+  if (!/^https?:\/\//i.test(u)) return u
+  return import.meta.env.DEV
+    ? `/api/og-proxy?url=${encodeURIComponent(u)}`
+    : `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`
+}
 
 /** Fixed-width sheet rendered off-screen, only while an export runs. */
 export const ExportSheet = forwardRef<HTMLDivElement, { og: OGData }>(

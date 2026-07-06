@@ -49,5 +49,8 @@ function ogProxy(): Plugin {
 
 // https://vite.dev/config/
 export default defineConfig({
+  // Relative base so the build works at any path (e.g. GitHub Pages
+  // serving from /ogpreview/).
+  base: './',
   plugins: [react(), tailwindcss(), ogProxy()],
 })
